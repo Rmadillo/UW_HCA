@@ -1,0 +1,106 @@
+---
+title: "Rrrrrrrr"
+author: "Late Night(ish) with Dwight & Bryan"
+date: "February 25, 2016"
+output: ioslides_presentation
+---
+
+## Why R?
+
+<center>
+![](http://i2.wp.com/www.r-statistics.com/wp-content/uploads/2015/03/Rlogo-1.png)
+</center>
+
+## Why R?
+<div class="columns-2">
+
+Data Smart is a great book for learning how to do machine learning in Excel. 
+
+![ds book](http://media.wiley.com/product_data/coverImage300/6X/11186614/111866146X.jpg)
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+But... what it takes a ~50 page chapter on forecasting in Excel to accomplish can be done in R with 1 line of code: ```forecast(my_time_series)```
+</div>
+
+
+## It's true: learning R is a pain in the ass
+<br/>
+<br/>
+<center>
+While the learning curve is steep,    
+it **is** easy to "learn to use R to accomplish *x*"...  
+</center>
+
+
+## It's true: learning R is a pain in the ass
+<br/>
+<br/>
+<center>
+While the learning curve is steep,   
+it **is** easy to "learn to use R to accomplish *x*"...  
+especially if you're willing to just be a hacker.  
+</center>
+
+
+## The hacker's motto
+<br/>
+<br/>
+<br/>
+<center>
+**F\*#k with it until it works or breaks.** 
+</center>
+
+
+## This is Dwight using R
+<center>
+![](https://s-media-cache-ak0.pinimg.com/736x/0b/7f/66/0b7f66d081271a282f9dfd137f57fe22.jpg)
+</center>
+
+
+## You might think this slide deck is pointless
+
+and it pretty much is. 
+
+
+## But it was created *entirely* in R
+
+```{r intslide, echo=FALSE, message=FALSE, warning=FALSE}
+require(qcc)
+require(dygraphs)
+
+bsi = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/clabsi.csv", header=T)
+
+bsi$Month = paste(bsi$Month, "01", sep="-")
+
+bsi$Month = as.Date(bsi$Month)
+
+bsi$Rate = round( ((bsi$BSI / bsi$central_line_days) * 1000), 1)
+
+bob = qcc(bsi$BSI, sizes = bsi$central_line_days/1000, type = "u", nsigmas = 2, plot=FALSE)
+
+bsi = data.frame(bsi, bob$limits)
+
+bsi_base = bsi[,4:6]
+  
+bsi_ts = ts(bsi_base, start = c(1998, 1), frequency = 12)
+
+dygraph(bsi_ts, main = "Monthly CLA-BSI Rate Control Chart") %>%
+  dyRangeSelector()
+```
+
+
+
+## Outline for tonight and next week
+<br/>
+
+1. Intro to RStudio via storytelling and interactive vizualization  
+2. The analytics process in R: *Are CLA-BSIs increasing?* 
+  
+  
+3. Pattern evaluation with dimension reduction  
+4. Evaluating predictive models  
+
