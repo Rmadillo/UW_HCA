@@ -93,14 +93,22 @@ dygraph(bsi_ts, main = "Monthly CLA-BSI Rate Control Chart") %>%
 ```
 
 
+## So if you can do it on the web
+
+<div align="center">
+<iframe width="420" height="315" src="https://www.youtube.com/embed/klSKIAKo4vo" frameborder="0" allowfullscreen></iframe>
+</div>
 
 ## Outline for tonight and next week
 <br/>
 
 1. Intro to RStudio via storytelling and interactive vizualization  
 2. The analytics process in R: *Are CLA-BSIs increasing?* 
-  
+<br/>
   
 3. Pattern evaluation with dimension reduction  
-4. Evaluating predictive models  
+4. Evaluating predictive models   
+<br/>  
 
+Working repo:  
+**https://github.com/Rmadillo/UW_HCA**
