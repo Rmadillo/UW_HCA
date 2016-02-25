@@ -11,7 +11,7 @@
 #########
 # Step 1: load data from github
 
-bsi = read.csv("https://raw.githubusercontent.com/Rmadillo/uw_hca/master/clabsi.csv")
+bsi = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/clabsi.csv")
 
 
 #########
