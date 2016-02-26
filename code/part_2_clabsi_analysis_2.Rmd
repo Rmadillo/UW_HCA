@@ -1,0 +1,270 @@
+---
+title: ''
+output: html_document
+---
+
+
+<center>
+![Logo](https://cdn.geekwire.com/wp-content/uploads/2014/08/uw.png)   
+<br>  
+
+**Bob's Fairly Decent Analytics Shop**  
+**Brief Technical Memo**  
+*`r format(Sys.Date(), "%d %B %Y")`*  
+</center>   
+ 
+<br/> 
+ 
+## Recent CLA-BSI rates remain within normal natural variation. 
+ 
+<br/> 
+ 
+#### Summary
+ 
+<br/> 
+ 
+- A clear step-change decline in mean monthly CLA-BSI rates occurred around September 2001.
+ 
+- There is no evidence that monthly CLA-BSI rates have gone out of control (i.e., no departures from natural variation) since September 2001.
+ 
+- 2006 had the lowest rate of any annual span in this time series, and is something of an outlier at this level of aggregation. 
+ 
+- Greater detail on recent CLA-BSI events, including Unit-level information, is available from the [All Knowing Greatness that is Google](http://www.google.com/). 
+ 
+ 
+ 
+ 
+```{r loaddata, echo=FALSE, message=FALSE, warning=FALSE}
+require(lubridate)
+require(qcc)
+require(htmlTable)
+require(dplyr)
+require(scales)
+require(htmlwidgets)
+require(dygraphs)
+require(ggplot2)
+require(strucchange)
+ 
+# load data from github
+
+bsi = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/clabsi.csv")
+bsi$Month = paste(bsi$Month, "01", sep="-")
+
+# convert it to a Date class
+
+bsi$Month = as.Date(bsi$Month)
+
+# calculate the monthly rate
+bsi$Rate = round( ((bsi$BSI / bsi$central_line_days) * 1000), 1)
+
+# create control plot table
+bob = qcc(bsi$BSI, sizes = bsi$central_line_days/1000, type = "u", nsigmas = 2, plot=FALSE)
+bsi = data.frame(bsi, bob$limits)
+
+# create time series
+bsi_base = bsi[,4:6]
+  
+bsi_ts = ts(bsi_base, start = c(1998, 1), frequency = 12)
+
+```
+ 
+<br/> 
+ 
+ 
+#### Results
+ 
+<br/> 
+ 
+*Figure 1. Monthly all hospital CLA-BSI rate per 1,000 central line days, with some major events located with dashed lines. Verical banding represents fiscal years. This plot is interactive: mouse hover to obtain values for any given month, and move the handles on the lower window to zoom in on the main graph, if desired.* 
+<br/>
+ 
+```{r widge, echo=FALSE, message=FALSE, warning=FALSE}
+ 
+# Create the widget
+dygraph(bsi_ts, main = "Monthly CLA-BSI Rate Control Chart") %>%
+  dyRangeSelector() 
+
+```
+ 
+ 
+ 
+ 
+```{r breakpoint, echo=FALSE, message=FALSE, warning=FALSE}
+ 
+# put breakpoint code in here
+require(strucchange)
+
+# create a time series object with just the rate
+
+clabsi_ts = ts(bsi$Rate, start = c(1998, 1), frequency = 12)
+
+# Use strucchange to find [change] breakpoints
+
+clabsi_bp = breakpoints(clabsi_ts ~ 1)
+clabsi_bp_summary = summary(clabsi_bp)
+clabsi_bp_confint = confint(clabsi_bp, level=0.95)
+
+# create linear model set for 0 to 5 step changes and 1 linear trend
+
+vm0 = lm(clabsi_ts ~ 1)
+vm1 = lm(clabsi_ts ~ breakfactor(clabsi_bp, breaks = 1))
+vm2 = lm(clabsi_ts ~ breakfactor(clabsi_bp, breaks = 2))
+vm3 = lm(clabsi_ts ~ breakfactor(clabsi_bp, breaks = 3))
+vm4 = lm(clabsi_ts ~ breakfactor(clabsi_bp, breaks = 4))
+vm5 = lm(clabsi_ts ~ breakfactor(clabsi_bp, breaks = 5))
+# lm not supported by residuals but doing it anyway for the heck of it
+vlm = lm(bsi$Rate ~ index(bsi$Rate))
+
+# Calculate BICs
+
+BICvalues = AIC(clabsi_bp, k = log(clabsi_bp$nobs))
+
+# BIC for linear model
+
+BIClm = AIC(vlm, k=log(nrow(bsi)))
+names(BIClm) = "lm"
+
+# Make vector of all BIC values
+
+BICs = append(BICvalues, BIClm)
+BICs = BICvalues
+
+# Calculate deltas
+
+deltas = BICs - min(BICs)
+
+# Calculate log likelihoods
+
+logliks = exp(-0.5*deltas)
+
+# Calculate model weights
+
+mweights = logliks/sum(logliks)
+
+# Make IT summary table
+
+BICtable = cbind(BICs, deltas, logliks, mweights)
+
+# set up some objects for later use in graphing
+
+optimal_bps = clabsi_bp$breakpoints
+bp_dates = bsi$Month[optimal_bps]
+lci = clabsi_bp_confint$confint[,1]
+uci = clabsi_bp_confint$confint[,3]
+seg1 = mean(clabsi_ts[1:optimal_bps])
+seg2 = mean(clabsi_ts[optimal_bps:length(clabsi_ts)])
+
+
+```
+ 
+<br/>
+ 
+**Changepoint analysis of the CLA-BSI time series shows a change in mean rate around September 2001, declining by `r txtRound(vm1$coefficients[2], 1)` CLA-BSIs per 1,000 central line days (Figure 2).** 
+ 
+ 
+ 
+- Changepoint analysis determined that the optimal model includes two segments, with a changepoint at September 2001 (95% CI: Nov 2000, Feb 2003). 
+ 
+- Mean CLA-BSI rate for segment 1 is `r txtRound(vm1$coefficients[1], 1)` and the mean CLA-BSI rate for segment 2 is `r txtRound( vm1$coefficients[1] + vm1$coefficients[2], 1)`. 
+ 
+- The change in mean CLA-BSI rate between these two segments is `r txtRound(vm1$coefficients[2], 1)`.
+ 
+<br/> 
+ 
+*Figure 2. Optimal changepoint model of the monthly all-hospital CLA-BSI rate per 1,000 central line days time series, October 2006-December 2015. Blue line shows the model, the dashed vertical line indicates the optimal changepoint, and the 95% confidence limit on that changepoint is shown near the x axis.* 
+ 
+```{r bpgraph, echo=FALSE, message=FALSE, warning=FALSE}
+# png("clabsi_time_series_jan06_dec15.png", width=10, height=7.5, res=300, units="in")
+ 
+# clabsi ggplot code goes here
+# make pretty plot of time series and optimal changepoint model
+
+ggplot(bsi, aes(Month, Rate)) +
+  scale_x_date() +
+  ylab("CLA-BSI Rate per 1000 Central Line Days\n") +
+  ggtitle("All Hospital Monthly CLA-BSI Rates, Jan 1998-Dec 2007") +
+  geom_vline(aes(xintercept = as.numeric(Month[optimal_bps])), lty=4, lwd=1, col="gray35") +
+  geom_line(lwd=1) +
+  geom_line(aes(Month, fitted(vm1, start = 0)), col="blue", lwd=0.8) +
+  geom_errorbarh(data=bsi, aes(xmin = bsi$Month[lci], y = 0.25, xmax = bsi$Month[uci]), height=0.2, col="blue") +
+  geom_point(aes(x = bsi$Month[optimal_bps], y = 0.25), shape=21, fill="white", col="blue", size=3)
+
+```
+<br/> 
+ 
+**Control chart of monthly CLA-BSI rates since the last changepoint shows no recent out-of-control months (Figure 3).** 
+ 
+- Because there is no evidence of a trend or  autocorrelation, a control chart is suitable for evaluating the statistical process since the changepoint. A 2&sigma; control limit is used to be conservative (i.e., willing to accept more false positives).  
+ 
+- The only out-of-control point occurred in Septemeber 2001. This would be expected natural variation in a time series of >20 points.
+ 
+- Monthly CLA-BSI rates since the changepoint show no evidence of changes inconsistent with natural variation. 
+ 
+<br/> 
+ 
+*Figure 3. Control chart of the monthly all-hospital CLA-BSI rate per 1,000 central line days time series since the last statistically distinct changepoint, November 2011-December 2015. Blue lines show the mean and 2&sigma; control limits for the u-chart.*  
+ 
+```{r clabsispc, echo=FALSE, message=FALSE, warning=FALSE}
+
+# gg bsi_sub control plot here
+ 
+bsi_sub = filter(bsi, Month >= '2001-09-01')
+
+# run qcc again on the subset
+
+bob2 = qcc(bsi_sub$BSI, sizes = bsi_sub$central_line_days/1000, type = "u", nsigmas = 2, plot=FALSE)
+
+# add the control limits to the data frame
+
+bsi_sub = data.frame(bsi_sub, bob2$limits)
+
+# create a basic ggplot of the rate
+
+ggplot(bsi_sub, aes(x=Month, y=Rate)) +
+  geom_line(aes(y=UCL), linetype='dashed', color='darkred') +
+  geom_hline(aes(yintercept=mean(Rate))) +
+  geom_line(color='darkblue', lwd=1)
+
+```
+ 
+
+<br/> 
+<br/> 
+<hr/> 
+ 
+#### Methods
+ 
+- Analysis was performed in R. 
+ 
+- Data was derived from the ```MEGA TABLE OF DOOM``` and ```Some_Excel_sheet_I_found_laying_around_in_Starbucks.xlxs``` tables in the Data Warehouse on Server 42.    
+ 
+- Changepoint detection was done using the ```breakpoints``` function in the ```strucchange``` package, using the default parameter values (```h=0.15, breaks=5```). A deeper analysis might consider a sensitivity analysis of changepoint detection using ```h=3``` and ```h=12``` to explore how typical evaluation and planning cycles (i.e., quarterly, annually) used as minimum segment lengths might impact the statistical results, and thus inferences made against those results. In addition, other packages such as ```bcp``` and ```changepoint``` might be used to see if changepoint detection locations are similar across each package's algorithms and methodologies.  
+ 
+- Information-theoretic (IT) methods with BIC were used to simultaneously test multiple hypotheses (changepoint models). The results are as follows:     
+ 
+```{r bictab, echo=FALSE, message=FALSE, warning=FALSE}
+htmlTable(txtRound(BICtable, 2), align="r",
+          header = c(" BIC ", " &Delta;BIC ", " Log-Likelihood ", " P<sub>M|D</sub>* "),
+          rnames = c("0", "1", "2", "3", "4", "5", "lm"),
+          rowlabel = "Model/Changepoints",
+           tfoot="*Probability of the model, given the data (aka Model Weights).",
+          css.cell = "padding-left: 2em; padding-right: 1em;")
+```
+ 
+- Raw output from the changepoint analysis: 
+ 
+```{r bpsummary, echo=FALSE, message=FALSE, warning=FALSE}
+clabsi_bp_summary
+clabsi_bp_confint
+```
+ 
+ 
+*R Session details:* 
+ 
+This document was created on: *`r date()`*. 
+ 
+```{r sessinfo, echo=FALSE}
+sessionInfo()
+```
+ 
+- Questions about this memo can be directed to [Dwight Barry](mailto:dwight.barry@seattlechildrens.org?subject=Questions about Intro R class). Code and aggregated (no-PHI) data for reproduction or peer review is available [upon request](mailto:dwight.barry@seattlechildrens.org?subject=Code and data request for Intro R class). 
