@@ -9,4 +9,8 @@ install.packages(c("ggplot2", "dplyr", "dygraphs", "DT", "googleVis", "qcc", "ti
                    "knitr", "strucchange"))
 
 devtools::install_github("hrbrmstr/taucharts")
+
+download.file("http://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/clabsi.csv", "clabsi.csv")
+
+
 ```
