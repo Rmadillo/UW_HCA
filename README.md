@@ -6,7 +6,7 @@ February 25, 2016
 Packages to install:  
 ```
 install.packages(c("ggplot2", "dplyr", "dygraphs", "DT", "googleVis", "qcc", "tidyr",
-                   "knitr", "strucchange"))
+                   "knitr", "strucchange", "devtools", "lubridate", "htmlTable", "htmlwidgets"))
 
 devtools::install_github("hrbrmstr/taucharts")
 
