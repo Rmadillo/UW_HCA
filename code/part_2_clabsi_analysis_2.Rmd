@@ -47,8 +47,13 @@ require(strucchange)
  
 # load data from github
 
-bsi = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/clabsi.csv")
+# this doesn't work at UW PCE:
+# bsi = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/clabsi.csv")
 bsi$Month = paste(bsi$Month, "01", sep="-")
+
+# use this at UW PCE
+# after downloading file manually before knitting
+bsi = read.csv('clabsi.csv', header=T)
 
 # convert it to a Date class
 
