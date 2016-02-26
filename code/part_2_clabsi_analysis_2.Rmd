@@ -1,5 +1,5 @@
 ---
-title: ''
+title: 'Example R Markdown Report'
 output: html_document
 ---
 
@@ -49,14 +49,18 @@ require(strucchange)
 
 # this doesn't work at UW PCE:
 # bsi = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/clabsi.csv")
-bsi$Month = paste(bsi$Month, "01", sep="-")
+# but it will work from your own computer
 
 # use this at UW PCE
 # after downloading file manually before knitting
-bsi = read.csv('clabsi.csv', header=T)
+# AND using getwd() to get the path to R's working directory
+# replace PATH/TO/FOLDER with the actual path for your workstation
+
+bsi = read.csv('C:/PATH/TO/FOLDER/clabsi.csv', header=T)
 
 # convert it to a Date class
 
+bsi$Month = paste(bsi$Month, "01", sep="-")
 bsi$Month = as.Date(bsi$Month)
 
 # calculate the monthly rate
@@ -179,9 +183,6 @@ seg2 = mean(clabsi_ts[optimal_bps:length(clabsi_ts)])
 *Figure 2. Optimal changepoint model of the monthly all-hospital CLA-BSI rate per 1,000 central line days time series, October 2006-December 2015. Blue line shows the model, the dashed vertical line indicates the optimal changepoint, and the 95% confidence limit on that changepoint is shown near the x axis.* 
  
 ```{r bpgraph, echo=FALSE, message=FALSE, warning=FALSE}
-# png("clabsi_time_series_jan06_dec15.png", width=10, height=7.5, res=300, units="in")
- 
-# clabsi ggplot code goes here
 # make pretty plot of time series and optimal changepoint model
 
 ggplot(bsi, aes(Month, Rate)) +
@@ -211,8 +212,8 @@ ggplot(bsi, aes(Month, Rate)) +
  
 ```{r clabsispc, echo=FALSE, message=FALSE, warning=FALSE}
 
-# gg bsi_sub control plot here
- 
+# select data that occurs from the changepoint to the end
+
 bsi_sub = filter(bsi, Month >= '2001-09-01')
 
 # run qcc again on the subset
