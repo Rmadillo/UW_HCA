@@ -14,7 +14,7 @@ devtools::install_github("hrbrmstr/taucharts")
 
 download.file("http://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/clabsi.csv", "clabsi.csv")
 
-# The to access it, you'll need to change the path in the .Rmd file to R's working directory
+# Then to access it, you'll need to change the path in the .Rmd file to R's working directory
 
 getwd()
 
