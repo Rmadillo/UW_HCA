@@ -1,0 +1,115 @@
+---
+title: ""
+output: html_document
+---
+
+<center>
+# Sentence format / Headline / Take home message
+**Analyst Name**  
+*Info about analyst: title, team, company, whatever*  
+`r format(Sys.Date(), '%d %B %Y')`  
+</center>
+
+```{r loadstuff, echo=FALSE, message=FALSE, warning=FALSE}
+# echo=FALSE supresses the code from showing in the report
+# message=FALSE, warning=FALSE suppress messages and warnings from report
+
+# packages you will use go here
+require(ggplot2)
+
+# data import occurs here
+data(cars)
+
+# data cleaning/manipulation, if any, goes here
+
+
+```
+
+<hr>
+
+```{r analytics, echo=FALSE, message=FALSE, warning=FALSE}
+# If you want your report to adapt to any changes in the data
+# all your analysis should occur before the report starts.
+# Then, you can use R objects to place soft values in the text.
+
+# Use code chunks like this to place figures
+# or use `r R_OBJECT$piece_of_object` to place object or object pieces inline
+
+speed_stats = mean(cars$speed)
+
+```
+
+
+## Recommendations and/or Summary
+
+- No more than about 4 *major* points or so
+- Give the decision make the answer **first**
+- and leave the details to further on in the report
+- Average speed was `r speed_stats`  
+
+
+## Important Results
+
+These are the results that directly support the recomendation/summary.  
+
+*Figure 1. Plot with code.*  
+```{r plot1}
+ggplot(cars, aes(speed, dist)) +
+  geom_point() +
+  geom_smooth()
+```
+
+More detail can be put in this section, rather than in recommendation/summary section.  
+
+*Figure 2. Plot without code.*   
+```{r plot2, echo=FALSE}
+ggplot(cars, aes(speed, dist)) +
+  geom_point() +
+  geom_smooth()
+```
+
+
+### Dataset Features 
+
+This section is optional, as it depends on your problem or question--writing a summary of a dataset or analysis for yourself or another data person? Use this here. Providing more of a recommendation or writing a memo for a decision maker? Move this section to the Appendix.  
+
+Lay out missingness, outliers, reasonable assumptions/inferences, etc.  
+
+
+<hr/>
+
+## Appendices
+
+### Methods
+
+Write out your methods here. Include enough detail that another analyst could evaluate your approach without having to call you. 
+
+
+### Assumptions / Supporting Results
+
+This is where *Dataset Features* might go if you are writing for a decision maker. Otherwise, it can be a place to put graphs or tables or results that led to the important results, but were not in and of themselves the results.    
+
+Things that could be included in this section might be some or all of:  
+
+- frequencies
+- ranges
+- relationships
+- outliers
+- tables of summary stats
+- missingness
+- assumptions and/or assumption checks
+- etc.
+
+
+
+<hr/>
+
+### Session Info
+
+Providing the context that you used can be helpful if others are trying to reproduce your work.  
+
+```{r sesinfo}
+sessionInfo()
+```
+
+*~ End of file ~*
