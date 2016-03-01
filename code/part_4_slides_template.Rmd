@@ -1,0 +1,106 @@
+---
+title: "Fast Car"
+author: "Dr. T Chapman, Show No Mercy General Hospital"
+date: "March 3, 2016"
+output: ioslides_presentation
+---
+
+```{r loadstuff, echo=FALSE, message=FALSE, warning=FALSE}
+# echo=FALSE supresses the code from showing in the slide
+# message=FALSE, warning=FALSE suppress messages and warnings from slide
+
+# packages you will use go here
+require(ggplot2)
+require(taucharts)
+
+# data import occurs here
+data(cars)
+
+# data cleaning/manipulation, if any, goes here
+
+
+```
+
+
+```{r analytics, echo=FALSE, message=FALSE, warning=FALSE}
+# If you want your slides to adapt to any changes in the data
+# all your analysis should occur before the slides start.
+# Then, you can use R objects to place soft values in the text.
+
+# Use code chunks like this to place figures
+# or use `r R_OBJECT$piece_of_object` to place object or object pieces inline
+
+speed_stats = mean(cars$speed)
+
+```
+
+
+## Recommendations and/or Summary
+
+- No more than about 4 *major* points or so
+- Give the decision make the answer **first**
+- and leave the details to further on in the report
+- Average speed was `r speed_stats`  
+
+
+## Car go fast.
+```{r plot1}
+ggplot(cars, aes(speed, dist)) +
+  geom_point() +
+  geom_smooth()
+```
+
+
+## Car go fast without code.
+```{r plot2, echo=FALSE}
+ggplot(cars, aes(speed, dist)) +
+  geom_point() +
+  geom_smooth()
+```
+
+## Car go fast interactively.
+```{r plot3, echo=FALSE}
+tauchart(cars) %>%
+  tau_point("speed", "dist") %>%
+  tau_trendline() %>%
+  tau_tooltip()
+```
+
+
+## Model cars.
+```{r model}
+summary(lm(cars$dist ~ cars$speed))
+```
+
+
+## APPENDIX
+
+<center>
+![alt text goes here](http://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/articles/image_article_collections/anatomy_pages/appendix3.jpg)
+</center>
+
+
+## Methods
+
+Write out your methods here. Include enough detail that another analyst could evaluate your approach without having to call you. 
+
+
+## Assumptions / Supporting Results
+
+Things that could be included in this section might be some or all of:  
+
+- frequencies
+- ranges
+- relationships
+- outliers
+- tables of summary stats
+- missingness
+- assumptions and/or assumption checks
+- etc.
+
+
+## Assumptions / Supporting Results
+
+```{r summy}
+summary(cars)
+```
