@@ -14,7 +14,7 @@
 patients = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/uw_population.csv", header=T)
 
 # FROM A UW PCE COMPUTER
-# download.file("http://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/uw_population.csv", "clabsi.csv")
+# download.file("http://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/uw_population.csv", "patients.csv")
 # getwd()
 # patients = read.csv("patients.csv", header=T)
 
@@ -54,7 +54,7 @@ ggMMplot <- function(var1, var2){
 str(patients)
 
 
-####D Simple cleaning ####
+#### Simple cleaning ####
 
 # fill in blanks in the Education column as 'Unknown'
 patients$Education = ifelse(patients$Education == "", 
@@ -133,6 +133,9 @@ ggplot(patients, aes(x=Age, y=PMPM)) +
 # Pairs plot (VERY slow! Be patient! [then zoom])
 bigplot = ggpairs(patients[,2:8])
 bigplot
+
+# Missing data, using VIM package
+matrixplot(patients)
 
 
 #### Descriptive stats ####
