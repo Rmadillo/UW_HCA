@@ -1,3 +1,7 @@
+## R code and data for Ryan and Jeff's class
+install.packages(c("ggplot2", "dplyr", "dygraphs", "DT", "googleVis", "qcc", "tidyr", "scales","knitr", "strucchange", "devtools", "lubridate", "htmlTable", "htmlwidgets","VIM","quantreg","GGally","psych"))
+devtools::install_github("hrbrmstr/taucharts")
+
 #########
 # Code for UW HCA Cert class
 # Dwight Barry & Bryan Nice
