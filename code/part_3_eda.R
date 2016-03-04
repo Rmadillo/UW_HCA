@@ -26,6 +26,7 @@ require(dplyr)     # for data manipulation
 require(GGally)    # for pairs plot
 require(quantreg)  # for quantile trends
 require(VIM)       # for missing data visualization
+require(psych)
 
 # Load a custom function to create a mosaic plot in ggplot
 # source: http://stackoverflow.com/questions/19233365/how-to-create-a-marimekko-mosaic-plot-in-ggplot2
