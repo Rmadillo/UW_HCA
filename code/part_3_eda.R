@@ -15,7 +15,7 @@ devtools::install_github("hrbrmstr/taucharts")
 #### Load data ####
 
 # FROM A NON-UW PCE COMPUTER
-patients = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/uw_population.csv", header=T)
+patients = read.csv("http://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/uw_population.csv", header=T)
 
 # FROM A UW PCE COMPUTER
 # download.file("http://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/uw_population.csv", "patients.csv")
